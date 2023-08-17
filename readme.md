@@ -11,12 +11,12 @@ Prebuild binaries for the following versions are provided:
 The following prebuild binaries are provided for each version:
 
 - `sqlite3-linux-x86`: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=0a052f8c5c084a52bdf4cf240d6052e60a88c14f, for GNU/Linux 3.2.0, not stripped.
-- `sqlite3-linux-arm`: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=a0843d6c17a69de1929e811856e1979b1574bfcf, for GNU/Linux 3.7.0, not stripped.
+- `sqlite3-linux-arm64`: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=a0843d6c17a69de1929e811856e1979b1574bfcf, for GNU/Linux 3.7.0, not stripped.
 - `sqlite3-darwin-x86`: Mach-O 64-bit executable x86_64.
-- `sqlite3-darwin-arm`: Mach-O 64-bit executable arm64.
+- `sqlite3-darwin-arm64`: Mach-O 64-bit executable arm64.
 - `sqlite3-darwin-universal`: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64Mach-O 64-bit executable x86_64] [arm64].
 - `sqlite3-win32-x86`: PE32+ executable (console) x86-64, for MS Windows.
-<!-- - `sqlite3-win32-arm`: //TODO -->
+<!-- - `sqlite3-win32-arm64`: //TODO -->
 
 # Flags
 

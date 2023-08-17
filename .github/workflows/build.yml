@@ -1,4 +1,4 @@
-name: Build and publish
+name: Build
 
 on:
     push:
@@ -12,14 +12,14 @@ env:
 
 jobs:
     download-sources:
-        name: Download and store sources
+        name: Download sources
         runs-on: ubuntu-20.04
         steps:
             - name: Download sources
               run: |
-                  curl -L http://sqlite.org/$SQLITE_RELEASE_YEAR/sqlite-amalgamation-$SQLITE_VERSION.zip --output src.zip
-                  unzip src.zip
-                  mv sqlite-amalgamation-$SQLITE_VERSION src
+                wget http://sqlite.org/$SQLITE_RELEASE_YEAR/sqlite-amalgamation-$SQLITE_VERSION.zip
+                unzip sqlite-amalgamation-$SQLITE_VERSION.zip
+                mv sqlite-amalgamation-$SQLITE_VERSION src
 
             - name: Store sources
               uses: actions/upload-artifact@v2
@@ -27,8 +27,8 @@ jobs:
                   name: sqlite-sources
                   path: src
 
-    build-ubuntu:
-        name: Build for Ubuntu
+    build-linux:
+        name: Build for Linux
         runs-on: ubuntu-20.04
         needs: download-sources
         steps:
@@ -40,36 +40,16 @@ jobs:
             - name: Compile sources
               run: |
                   mkdir dist
-                  gcc \
-                    -DHAVE_READLINE \
-                    -DSQLITE_ENABLE_DBPAGE_VTAB \
-                    -DSQLITE_ENABLE_DBSTAT_VTAB \
-                    -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
-                    -DSQLITE_ENABLE_FTS4 \
-                    -DSQLITE_ENABLE_FTS5 \
-                    -DSQLITE_ENABLE_GEOPOLY \
-                    -DSQLITE_ENABLE_JSON1 \
-                    -DSQLITE_ENABLE_MATH_FUNCTIONS \
-                    -DSQLITE_ENABLE_OFFSET_SQL_FUNC \
-                    -DSQLITE_ENABLE_RTREE \
-                    -DSQLITE_ENABLE_STAT4 \
-                    -DSQLITE_ENABLE_STMTVTAB \
-                    -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION \
-                    -DSQLITE_HAVE_ZLIB \
-                    -DSQLITE_LIKE_DOESNT_MATCH_BLOBS \
-                    -DSQLITE_THREADSAFE=0 \
-                    -DUSE_URI \
-                    src/shell.c src/sqlite3.c -o dist/sqlite3-ubuntu \
-                    -ldl -lz -lm -lreadline -lncurses
-                  chmod +x dist/sqlite3-ubuntu
+                  gcc -DHAVE_READLINE -DSQLITE_ENABLE_DBPAGE_VTAB -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_ENABLE_EXPLAIN_COMMENTS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_GEOPOLY -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_MATH_FUNCTIONS -DSQLITE_ENABLE_OFFSET_SQL_FUNC -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_STAT4 -DSQLITE_ENABLE_STMTVTAB -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION -DSQLITE_HAVE_ZLIB -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_THREADSAFE=0 -DUSE_URI src/shell.c src/sqlite3.c -o dist/sqlite3-linux-x86 -ldl -lz -lm -lreadline -lncurses -O3
+                  chmod +x dist/sqlite3-linux-x86
 
             - name: Store binaries
               uses: actions/upload-artifact@v2
               with:
-                  name: ubuntu-binaries
+                  name: linux-binaries
                   path: dist
 
-    build-windows:
+    build-win32:
         name: Build for Windows
         runs-on: windows-2019
         needs: download-sources
@@ -83,33 +63,17 @@ jobs:
               shell: bash
               run: |
                   mkdir dist
-                  gcc \
-                    -DSQLITE_ENABLE_DBPAGE_VTAB \
-                    -DSQLITE_ENABLE_DBSTAT_VTAB \
-                    -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
-                    -DSQLITE_ENABLE_FTS4 \
-                    -DSQLITE_ENABLE_FTS5 \
-                    -DSQLITE_ENABLE_GEOPOLY \
-                    -DSQLITE_ENABLE_JSON1 \
-                    -DSQLITE_ENABLE_MATH_FUNCTIONS \
-                    -DSQLITE_ENABLE_OFFSET_SQL_FUNC \
-                    -DSQLITE_ENABLE_RTREE \
-                    -DSQLITE_ENABLE_STAT4 \
-                    -DSQLITE_ENABLE_STMTVTAB \
-                    -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION \
-                    -DSQLITE_LIKE_DOESNT_MATCH_BLOBS \
-                    -DSQLITE_THREADSAFE=0 \
-                    -DUSE_URI \
-                    -I. src/shell.c src/sqlite3.c -o dist/sqlite3.exe
+                  gcc -DSQLITE_ENABLE_DBPAGE_VTAB -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_ENABLE_EXPLAIN_COMMENTS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_GEOPOLY -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_MATH_FUNCTIONS -DSQLITE_ENABLE_OFFSET_SQL_FUNC -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_STAT4 -DSQLITE_ENABLE_STMTVTAB -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_THREADSAFE=0 -DUSE_URI -I. src/shell.c src/sqlite3.c -o dist/sqlite3-win32-x86.exe -O3
+                  chmod +x dist/sqlite3-win32-x86.exe
 
             - name: Store binaries
               uses: actions/upload-artifact@v2
               with:
-                  name: windows-binaries
+                  name: win32-binaries
                   path: dist
 
-    build-macos:
-        name: Build for macOS
+    build-darwin:
+        name: Build for Darwin
         runs-on: macos-11
         needs: download-sources
         steps:
@@ -121,63 +85,22 @@ jobs:
             - name: Compile sources (x86)
               run: |
                   mkdir -p dist
-                  gcc \
-                    -DHAVE_READLINE \
-                    -DSQLITE_ENABLE_DBPAGE_VTAB \
-                    -DSQLITE_ENABLE_DBSTAT_VTAB \
-                    -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
-                    -DSQLITE_ENABLE_FTS4 \
-                    -DSQLITE_ENABLE_FTS5 \
-                    -DSQLITE_ENABLE_GEOPOLY \
-                    -DSQLITE_ENABLE_JSON1 \
-                    -DSQLITE_ENABLE_MATH_FUNCTIONS \
-                    -DSQLITE_ENABLE_OFFSET_SQL_FUNC \
-                    -DSQLITE_ENABLE_RTREE \
-                    -DSQLITE_ENABLE_STAT4 \
-                    -DSQLITE_ENABLE_STMTVTAB \
-                    -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION \
-                    -DSQLITE_HAVE_ZLIB \
-                    -DSQLITE_LIKE_DOESNT_MATCH_BLOBS \
-                    -DSQLITE_THREADSAFE=0 \
-                    -DUSE_URI \
-                    src/shell.c src/sqlite3.c -o dist/sqlite3-macos-x86 \
-                    -target x86_64-apple-macos10.12 \
-                    -ldl -lz -lm -lreadline -lncurses
+                  gcc -DHAVE_READLINE -DSQLITE_ENABLE_DBPAGE_VTAB -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_ENABLE_EXPLAIN_COMMENTS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_GEOPOLY -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_MATH_FUNCTIONS -DSQLITE_ENABLE_OFFSET_SQL_FUNC -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_STAT4 -DSQLITE_ENABLE_STMTVTAB -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION -DSQLITE_HAVE_ZLIB -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_THREADSAFE=0 -DUSE_URI src/shell.c src/sqlite3.c -o dist/sqlite3-darwin-x86 -target x86_64-apple-macos10.12 -ldl -lz -lm -lreadline -lncurses -O3
+                  chmod +x dist/sqlite3-darwin-x86
 
-            - name: Compile sources (arm)
+            - name: Compile sources (arm64)
               run: |
                   mkdir -p dist
-                  gcc \
-                    -DHAVE_READLINE \
-                    -DSQLITE_ENABLE_DBPAGE_VTAB \
-                    -DSQLITE_ENABLE_DBSTAT_VTAB \
-                    -DSQLITE_ENABLE_EXPLAIN_COMMENTS \
-                    -DSQLITE_ENABLE_FTS4 \
-                    -DSQLITE_ENABLE_FTS5 \
-                    -DSQLITE_ENABLE_GEOPOLY \
-                    -DSQLITE_ENABLE_JSON1 \
-                    -DSQLITE_ENABLE_MATH_FUNCTIONS \
-                    -DSQLITE_ENABLE_OFFSET_SQL_FUNC \
-                    -DSQLITE_ENABLE_RTREE \
-                    -DSQLITE_ENABLE_STAT4 \
-                    -DSQLITE_ENABLE_STMTVTAB \
-                    -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION \
-                    -DSQLITE_HAVE_ZLIB \
-                    -DSQLITE_LIKE_DOESNT_MATCH_BLOBS \
-                    -DSQLITE_THREADSAFE=0 \
-                    -DUSE_URI \
-                    src/shell.c src/sqlite3.c -o dist/sqlite3-macos-arm \
-                    -target arm64-apple-macos11 \
-                    -ldl -lz -lm -lreadline -lncurses
+                  gcc -DHAVE_READLINE -DSQLITE_ENABLE_DBPAGE_VTAB -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_ENABLE_EXPLAIN_COMMENTS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_GEOPOLY -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_MATH_FUNCTIONS -DSQLITE_ENABLE_OFFSET_SQL_FUNC -DSQLITE_ENABLE_RTREE -DSQLITE_ENABLE_STAT4 -DSQLITE_ENABLE_STMTVTAB -DSQLITE_ENABLE_UNKNOWN_SQL_FUNCTION -DSQLITE_HAVE_ZLIB -DSQLITE_LIKE_DOESNT_MATCH_BLOBS -DSQLITE_THREADSAFE=0 -DUSE_URI src/shell.c src/sqlite3.c -o dist/sqlite3-darwin-arm -target arm64-apple-macos11 -ldl -lz -lm -lreadline -lncurses -O3
+                  chmod +x dist/sqlite3-darwin-arm
 
             - name: Create universal binary
               run: |
-                  lipo -create -output dist/sqlite3-macos \
-                    dist/sqlite3-macos-x86 dist/sqlite3-macos-arm
-                  chmod +x dist/sqlite3-macos
+                  lipo -create -output dist/sqlite3-darwin-universal dist/sqlite3-darwin-x86 dist/sqlite3-darwin-arm
+                  chmod +x dist/sqlite3-darwin-universal
 
             - name: Store binaries
               uses: actions/upload-artifact@v2
               with:
-                  name: macos-binaries
+                  name: darwin-binaries
                   path: dist

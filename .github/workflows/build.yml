@@ -22,7 +22,7 @@ jobs:
                 mv sqlite-amalgamation-$SQLITE_VERSION src
 
             - name: Store sources
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: sqlite-sources
                   path: src
@@ -32,7 +32,7 @@ jobs:
         runs-on: ubuntu-20.04
         needs: download-sources
         steps:
-            - uses: actions/download-artifact@v2
+            - uses: actions/download-artifact@v4
               with:
                   name: sqlite-sources
                   path: src
@@ -44,7 +44,7 @@ jobs:
                   chmod +x dist/sqlite3-linux-x86
 
             - name: Store binaries
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: linux-binaries
                   path: dist
@@ -54,7 +54,7 @@ jobs:
         runs-on: windows-2019
         needs: download-sources
         steps:
-            - uses: actions/download-artifact@v2
+            - uses: actions/download-artifact@v4
               with:
                   name: sqlite-sources
                   path: src
@@ -67,7 +67,7 @@ jobs:
                   chmod +x dist/sqlite3-win32-x86.exe
 
             - name: Store binaries
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: win32-binaries
                   path: dist
@@ -77,7 +77,7 @@ jobs:
         runs-on: macos-11
         needs: download-sources
         steps:
-            - uses: actions/download-artifact@v2
+            - uses: actions/download-artifact@v4
               with:
                   name: sqlite-sources
                   path: src
@@ -100,7 +100,7 @@ jobs:
                   chmod +x dist/sqlite3-darwin-universal
 
             - name: Store binaries
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: darwin-binaries
                   path: dist
